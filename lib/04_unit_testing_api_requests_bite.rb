@@ -1,0 +1,41 @@
+require 'date'
+require 'json'
+require 'net/http'
+
+class TimeError
+  # Returns difference in seconds between server time
+  # and the time on this computer
+  def initialize(requester)
+    @requester = requester
+
+  end 
+
+  def error(time)
+    return get_server_time - time.now
+  end
+
+  private
+
+  def get_server_time
+    text_response = @requester.get(URI("https://worldtimeapi.org/api/ip"))
+    json = JSON.parse(text_response)
+    return DateTime.parse(json["utc_datetime"]).to_time
+  end
+end
+
+
+class CatFacts
+  def initialize(requester)
+    @requester =requester 
+  end 
+  def provide
+    return "Cat fact: #{get_cat_fact["fact"]}"
+  end
+
+  private
+
+  def get_cat_fact
+    text_response = @requester.get(URI("https://catfact.ninja/fact"))
+    return JSON.parse(text_response)
+  end
+end
